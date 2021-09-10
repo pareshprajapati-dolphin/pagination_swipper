@@ -1,75 +1,32 @@
-import React, { useState } from "react";
+import React from "react";
 import "./pagination.css";
 
-function Pagination({ totalPages, handleClick, pageNeighbours }) {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const LEFT = " left";
-  const RIGHT = " right";
-
+function Pagination({ totalPages, handleClick, currentPage }) {
   function goToNextPage() {
-    let page = currentPage + 1;
-    setCurrentPage(page);
-    handleClick(page);
+    let num = currentPage + 1;
+    handleClick(num);
   }
 
   function goToPreviousPage() {
-    let page = currentPage - 1;
-    setCurrentPage(page);
-    handleClick(page);
+    let num = currentPage - 1;
+    handleClick(num);
   }
 
   function changePage(num) {
     // const pageNumber = Number(event.target.textContent);
-    setCurrentPage(num);
+
     handleClick(num);
   }
-  const range = (from, to, step = 1) => {
-    let i = from;
-    let range = [];
 
-    if (from < 3) {
-      return (range = [2, 3, 4]);
-    }
-    while (i <= to) {
-      range.push(i);
-      i += step;
-    }
-    console.log(range);
-    return range;
-  };
-
-  const renderPage = () => {
-    const totalNumbers = pageNeighbours * 2 + 1;
-    const totlaBlock = totalNumbers + 1;
-    if (totalPages > totlaBlock) {
-      const startPage = Math.max(2, currentPage - pageNeighbours);
-      const endPage = Math.min(totalPages - 1, currentPage + pageNeighbours);
-
-      console.log("start page=", startPage);
-      console.log("the end page ===", endPage);
-
-      let pages = range(startPage, endPage);
-
-      const leftPage = startPage > 2;
-      const Rigthpage = totalPages - endPage > 1;
-      const spli = totalNumbers - (pages.length + 1);
-
-      if (leftPage && !Rigthpage) {
-        console.log("exatraaaa");
-        const extraPage = range(startPage - spli, startPage - 1);
-        pages = [LEFT, ...extraPage, ...pages];
-      } else if (leftPage && Rigthpage) {
-        pages = [LEFT, ...pages, RIGHT];
-      } else {
-        pages = [...pages, RIGHT];
-      }
-
-      return [1, ...pages, totalPages];
+  const renderPage = (page, total) => {
+    if (page % 5 >= 0 && page > 4 && page + 2 < total) {
+      return [1, "---", page - 1, page, page + 1, "---", total];
+    } else if (page % 5 >= 0 && page > 4 && page + 2 >= total) {
+      return [1, "---", total - 3, total - 2, total - 1, total];
+    } else {
+      return [1, 2, 3, 4, "---", total];
     }
   };
-
-  const pages = renderPage() || [];
 
   return (
     <>
@@ -80,13 +37,8 @@ function Pagination({ totalPages, handleClick, pageNeighbours }) {
         >
           prev
         </button>
-        {pages.map((number) => {
-          if (number === LEFT)
-            return <li className="paginationItem_1"> &hellip; </li>;
-
-          if (number === RIGHT)
-            return <li className="paginationItem_1"> &hellip; </li>;
-
+        {renderPage(currentPage, totalPages).map((number) => {
+          console.log(number);
           return (
             <button
               key={number}

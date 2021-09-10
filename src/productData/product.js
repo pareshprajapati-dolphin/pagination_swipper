@@ -7,16 +7,17 @@ const Product = () => {
 
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const limit = [5];
-  const startNumber = (page - 1) * limit;
-  const selectedUsers = users.slice(startNumber, startNumber + limit);
+  const [pageLimit, setPageLimit] = useState(5);
+  const limit = [5, 10, 15, 20];
+  const startNumber = (page - 1) * pageLimit;
+  const selectedUsers = users.slice(startNumber, startNumber + pageLimit);
 
   const loadProduct = async () => {
     await axios
       .get(`https://60ff90a3bca46600171cf36d.mockapi.io/api/products`)
       .then((response) => {
         setUsers(response.data);
-        setTotalPages(Math.ceil(response.data.length / limit));
+        setTotalPages(Math.ceil(response.data.length / pageLimit));
       });
   };
 
@@ -59,14 +60,28 @@ const Product = () => {
             </tbody>
           </table>
         </div>
-      </div>
-      <div className="pagination justify-content-end">
-        <Pagination
-          data={users}
-          totalPages={totalPages}
-          handleClick={handleClick}
-          pageNeighbours={1}
-        />
+
+        <div className="row">
+          <div className="col col-4">
+            <select
+              className="select"
+              onChange={(e) => setPageLimit(e.target.value)}
+            >
+              {limit.map((num) => (
+                <option>{num}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="pagination justify-content-end">
+            <Pagination
+              data={users}
+              totalPages={totalPages}
+              handleClick={handleClick}
+              currentPage={page}
+            />
+          </div>
+        </div>
       </div>
     </>
   );
