@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Pagination from "./pagination";
+import { useHistory, useLocation } from "react-router-dom";
+const queryString = require("query-string");
 
 const Product = () => {
   const [users, setUsers] = useState([]);
-
-  const [page, setPage] = useState(1);
+  const history = useHistory();
+  const [currentPage, setCurrentPage] = useState(
+    queryString.parse(useLocation().search).pages || 1
+  );
   const [totalPages, setTotalPages] = useState(0);
   const [pageLimit, setPageLimit] = useState(5);
   const limit = [5, 10, 15, 20];
-  const startNumber = (page - 1) * pageLimit;
+  const startNumber = (currentPage - 1) * pageLimit;
   const selectedUsers = users.slice(startNumber, startNumber + pageLimit);
 
   const loadProduct = async () => {
@@ -26,11 +30,17 @@ const Product = () => {
   }, []);
 
   const handleClick = (num) => {
-    setPage(num);
+    setCurrentPage(num);
+    history.push({
+      pathname: "/product",
+      search: `?pages=${num}`,
+    });
+    //   window.history.pushState(null, null, `/product?page=${num}`);
   };
+
   return (
     <>
-      <div className="container-fluid">
+      <div className="container my-3">
         <div className="my-4">
           <table className="table table-striped border">
             <thead>
@@ -78,7 +88,7 @@ const Product = () => {
               data={users}
               totalPages={totalPages}
               handleClick={handleClick}
-              currentPage={page}
+              currentPage={currentPage}
             />
           </div>
         </div>
