@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Pagination from "./pagination";
 import { useHistory, useLocation } from "react-router-dom";
+import { Shortcuts } from "shortcuts";
 const queryString = require("query-string");
 
 const Product = () => {
@@ -16,6 +17,7 @@ const Product = () => {
   const startNumber = (currentPage - 1) * pageLimit;
   const selectedUsers = users.slice(startNumber, startNumber + pageLimit);
 
+  const shortcuts = new Shortcuts();
   const loadProduct = async () => {
     await axios
       .get(`https://60ff90a3bca46600171cf36d.mockapi.io/api/products`)
@@ -35,9 +37,16 @@ const Product = () => {
       pathname: "/product",
       search: `?pages=${num}`,
     });
-    //   window.history.pushState(null, null, `/product?page=${num}`);
   };
-
+  shortcuts.add([
+    {
+      shortcut: "Ctrl+k",
+      handler: () => {
+        document.getElementById("search").focus();
+        return true;
+      },
+    },
+  ]);
   return (
     <>
       <div className="container my-3">
@@ -70,7 +79,14 @@ const Product = () => {
             </tbody>
           </table>
         </div>
-
+        <div className="my-3">
+          <input
+            id="search"
+            type="text"
+            className="select"
+            placeholder="Search..   ALT+K"
+          />
+        </div>
         <div className="row">
           <div className="col col-4">
             <select
